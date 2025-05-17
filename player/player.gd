@@ -1,7 +1,13 @@
 extends CharacterBody3D
 
+@export var health: int = 4
+var next_frame_inpulse_velocity: Vector3 = Vector3.ZERO
+signal died
+
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	%ProgressBar.value = health
+	%ProgressBar.max_value = health
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -29,7 +35,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 10.0
 	elif Input.is_action_just_released("jump") and velocity.y > 0.0:
 		velocity.y = 0.0
-	
+	velocity += next_frame_inpulse_velocity
 	move_and_slide()
 	
 	if Input.is_action_pressed("shoot") and %ShootTimer.is_stopped():
@@ -43,3 +49,29 @@ func shoot():
 	bullet.global_transform = %Marker3D.global_transform
 	%ShootTimer.start()
 	%AudioStreamPlayer.play()
+
+
+func _on_area_3d_body_entered(body: Node3D) -> void:
+	if not %HurtTimer.is_stopped():
+		return
+	health -= 1
+	%ProgressBar.value = health
+	var direction = -global_position.direction_to(body.global_position)
+	next_frame_inpulse_velocity = 40.0 * direction
+	if health <= 0:
+		died.emit()
+	%HurtTimer.start()
+	%BounceTimer.start()
+	%HurtAudio.play()
+	%HurtArea.monitoring = false
+	
+
+func _on_hurt_timer_timeout() -> void:
+	%HurtArea.monitoring = true
+	if %HurtArea.has_overlapping_bodies():
+		for body in %HurtArea.get_overlapping_bodies():
+			_on_area_3d_body_entered(body)
+			break
+
+func _on_bounce_timer_timeout() -> void:
+	next_frame_inpulse_velocity = Vector3.ZERO

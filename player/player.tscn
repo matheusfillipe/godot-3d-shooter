@@ -1,13 +1,25 @@
-[gd_scene load_steps=7 format=3 uid="uid://bj5itwqkvy5mj"]
+[gd_scene load_steps=10 format=3 uid="uid://bj5itwqkvy5mj"]
 
 [ext_resource type="PackedScene" uid="uid://ca4hy4pjysotu" path="res://player/simple_gun/gun_model.glb" id="1_oul6g"]
 [ext_resource type="Script" uid="uid://s7vdorm2mqi6" path="res://player/player.gd" id="1_rkbax"]
 [ext_resource type="Texture2D" uid="uid://drfcwdqr5w6lt" path="res://player/reticle.png" id="3_g1dw6"]
 [ext_resource type="AudioStream" uid="uid://det4bibbk1bq4" path="res://player/gun_shoot.wav" id="4_yw30f"]
+[ext_resource type="AudioStream" uid="uid://cq1wiwv4y2n4j" path="res://mob/mob_take_damage.wav" id="5_qjkh3"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
+radius = 0.55
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_kqu6x"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qjkh3"]
+bg_color = Color(0.0760563, 0.214594, 0.281974, 0.705882)
+shadow_color = Color(0.591369, 0.368651, 0.0686627, 0.956863)
+shadow_size = 11
+shadow_offset = Vector2(-1.74, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g6k8r"]
+bg_color = Color(0.324527, 0.607415, 0.808675, 1)
+corner_detail = 11
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_rkbax")
@@ -37,10 +49,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
+offset_left = -59.0
+offset_top = -13.0
+offset_right = 5.0
+offset_bottom = 51.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
@@ -56,3 +68,48 @@ one_shot = true
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("4_yw30f")
+
+[node name="HurtArea" type="Area3D" parent="."]
+unique_name_in_owner = true
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HurtArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_kqu6x")
+
+[node name="HurtTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="HurtAudio" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("5_qjkh3")
+volume_db = 1.567
+pitch_scale = 0.9
+
+[node name="BounceTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.1
+one_shot = true
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -561.0
+offset_top = 44.0
+offset_right = -43.0
+offset_bottom = 114.0
+grow_horizontal = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_qjkh3")
+theme_override_styles/fill = SubResource("StyleBoxFlat_g6k8r")
+max_value = 10.0
+step = 1.0
+value = 2.0
+allow_lesser = true
+show_percentage = false
+
+[connection signal="body_entered" from="HurtArea" to="." method="_on_area_3d_body_entered"]
+[connection signal="timeout" from="HurtTimer" to="." method="_on_hurt_timer_timeout"]
+[connection signal="timeout" from="BounceTimer" to="." method="_on_bounce_timer_timeout"]

@@ -197,6 +197,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.7954, 0.481269, 3.16472)
 spawn_interval = 4
 
 [connection signal="body_entered" from="KillPlane" to="." method="_on_kill_plane_body_entered"]
+[connection signal="died" from="Player" to="." method="_on_player_died"]
 [connection signal="mob_spawned" from="Spawners/MobSpawner" to="." method="_on_mob_spawner_mob_spawned"]
 [connection signal="mob_spawned" from="Spawners/MobSpawner2" to="." method="_on_mob_spawner_mob_spawned"]
 [connection signal="mob_spawned" from="Spawners/MobSpawner3" to="." method="_on_mob_spawner_mob_spawned"]

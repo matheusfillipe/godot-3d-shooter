@@ -9,6 +9,7 @@
 radius = 0.314781
 
 [node name="Mob" type="RigidBody3D"]
+collision_layer = 5
 gravity_scale = 0.0
 lock_rotation = true
 script = ExtResource("1_6jlfs")
@@ -27,7 +28,8 @@ one_shot = true
 [node name="HurtSound" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true
 stream = ExtResource("3_pirjb")
-volume_db = -7.855
+volume_db = -9.156
+pitch_scale = 1.22
 
 [node name="DieSound" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true

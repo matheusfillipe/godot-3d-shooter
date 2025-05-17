@@ -58,6 +58,12 @@ shoot={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="Physics"
+3d_physics/layer_2="Player"
+3d_physics/layer_3="Enemy"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

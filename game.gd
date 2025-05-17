@@ -19,3 +19,7 @@ func _on_mob_spawner_mob_spawned(mob: Node) -> void:
 
 func _on_kill_plane_body_entered(body: Node3D) -> void:
 	get_tree().reload_current_scene.call_deferred()
+
+
+func _on_player_died() -> void:
+	get_tree().reload_current_scene.call_deferred()

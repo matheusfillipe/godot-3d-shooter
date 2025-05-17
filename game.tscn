@@ -1,9 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://dr87vl1oid6ap"]
+[gd_scene load_steps=9 format=3 uid="uid://dr87vl1oid6ap"]
 
+[ext_resource type="Script" uid="uid://bgq6uobk4v6fy" path="res://game.gd" id="1_7jktm"]
 [ext_resource type="PackedScene" uid="uid://bj5itwqkvy5mj" path="res://player/player.tscn" id="1_80nbo"]
 [ext_resource type="Material" uid="uid://gd5asgop2wrh" path="res://level/platform.tres" id="1_feb5d"]
 [ext_resource type="Material" uid="uid://b27440y565rx0" path="res://level/bridge.tres" id="2_feb5d"]
 [ext_resource type="PackedScene" uid="uid://88dxb6q616t" path="res://mob/spawner/mob_spawner.tscn" id="4_fc0e3"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_fc0e3"]
+font_size = 56
+outline_size = 7
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 18
+shadow_color = Color(0.141176, 0.141176, 0.141176, 0.968627)
+shadow_offset = Vector2(3.54, 1)
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_7jktm"]
 
 [sub_resource type="Environment" id="Environment_80nbo"]
 background_mode = 1
@@ -23,6 +34,29 @@ fog_height_density = 0.0623
 volumetric_fog_density = 0.1185
 
 [node name="Game" type="Node3D"]
+script = ExtResource("1_7jktm")
+
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 62.0
+offset_top = 59.0
+offset_right = 274.0
+offset_bottom = 136.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Score: 0"
+label_settings = SubResource("LabelSettings_fc0e3")
+
+[node name="KillPlane" type="Area3D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="KillPlane"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -39.1654, 0)
+shape = SubResource("WorldBoundaryShape3D_7jktm")
+
+[node name="Player" parent="." instance=ExtResource("1_80nbo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.92647, 0, 10.7498)
+collision_layer = 3
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(6.4, 0, 0, 0, 1, 0, 0, 0, 5.2, 0, -11, 0)
@@ -128,9 +162,6 @@ use_collision = true
 size = Vector3(6, 1, 2)
 material = ExtResource("2_feb5d")
 
-[node name="Player" parent="." instance=ExtResource("1_80nbo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-3.78552e-08, 0.866025, -0.5, -0.5, 0.433013, 0.75, 0.866025, 0.25, 0.433013, 0, 20, 0)
 light_energy = 0.358
@@ -139,5 +170,38 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_80nbo")
 
-[node name="MobSpawner" parent="." instance=ExtResource("4_fc0e3")]
+[node name="Spawners" type="Node" parent="."]
+
+[node name="MobSpawner" parent="Spawners" instance=ExtResource("4_fc0e3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.70887, 0.0828068, -11.7236)
+spawn_interval = 4
+
+[node name="MobSpawner2" parent="Spawners" instance=ExtResource("4_fc0e3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.36407, 0.0828068, -50.0963)
+spawn_interval = 4
+
+[node name="MobSpawner3" parent="Spawners" instance=ExtResource("4_fc0e3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.5409, -3.62826, -45.1726)
+spawn_interval = 4
+
+[node name="MobSpawner6" parent="Spawners" instance=ExtResource("4_fc0e3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.8949, -4.21449, -39.2035)
+spawn_interval = 4
+
+[node name="MobSpawner4" parent="Spawners" instance=ExtResource("4_fc0e3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.9107, 0.481269, 3.16472)
+spawn_interval = 4
+
+[node name="MobSpawner5" parent="Spawners" instance=ExtResource("4_fc0e3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.7954, 0.481269, 3.16472)
+spawn_interval = 4
+
+[connection signal="body_entered" from="KillPlane" to="." method="_on_kill_plane_body_entered"]
+[connection signal="mob_spawned" from="Spawners/MobSpawner" to="." method="_on_mob_spawner_mob_spawned"]
+[connection signal="mob_spawned" from="Spawners/MobSpawner2" to="." method="_on_mob_spawner_mob_spawned"]
+[connection signal="mob_spawned" from="Spawners/MobSpawner3" to="." method="_on_mob_spawner_mob_spawned"]
+[connection signal="mob_spawned" from="Spawners/MobSpawner6" to="." method="_on_mob_spawner_mob_spawned"]
+[connection signal="mob_spawned" from="Spawners/MobSpawner4" to="." method="_on_mob_spawner_mob_spawned"]
+[connection signal="mob_spawned" from="Spawners/MobSpawner5" to="." method="_on_mob_spawner_mob_spawned"]
+
+[editable path="Spawners/MobSpawner"]

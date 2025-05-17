@@ -4,3 +4,6 @@ extends Node3D
 
 func hurt() -> void:
 	animation_tree.set("parameters/OneShot/request", true)
+	
+func die() -> void:
+	animation_tree.set("parameters/OneShot/request", false)

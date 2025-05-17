@@ -1,13 +1,52 @@
-[gd_scene load_steps=5 format=3 uid="uid://88dxb6q616t"]
+[gd_scene load_steps=13 format=3 uid="uid://88dxb6q616t"]
 
 [ext_resource type="Script" uid="uid://doce3bv3b01pc" path="res://mob/spawner/mob_spawner.gd" id="1_68dvk"]
 [ext_resource type="PackedScene" uid="uid://uw8barblxj8t" path="res://mob/mob.tscn" id="2_skyhy"]
 [ext_resource type="PackedScene" uid="uid://dbt0d7vk84781" path="res://mob/spawner_model.tscn" id="3_skyhy"]
+[ext_resource type="Shader" uid="uid://cdapeipyd1akd" path="res://mob/spawner/spawner_healthbar_shader.gdshader" id="4_yc5gn"]
+[ext_resource type="AudioStream" uid="uid://cq1wiwv4y2n4j" path="res://mob/mob_take_damage.wav" id="5_rc2ki"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_skyhy"]
 radius = 20.0
 
-[node name="MobSpawner" type="Node3D"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_yc5gn"]
+viewport_path = NodePath("MeshInstance3D/SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rc2ki"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_yc5gn")
+shader_parameter/viewport_texture = SubResource("ViewportTexture_yc5gn")
+shader_parameter/background_opacity = 0.32
+shader_parameter/glow_color = Vector3(0.5, 0, 0.19)
+shader_parameter/glow_intensity = 0.2
+
+[sub_resource type="QuadMesh" id="QuadMesh_skyhy"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_rc2ki")
+size = Vector2(2, 0.25)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yc5gn"]
+bg_color = Color(0.117647, 0.282353, 0, 0)
+draw_center = false
+border_width_left = 4
+border_width_top = 20
+border_width_right = 4
+border_width_bottom = 20
+border_color = Color(0.914364, 0.633314, 0.106136, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_skyhy"]
+bg_color = Color(0.985811, 0, 0.0506578, 1)
+border_width_left = 4
+border_width_top = 20
+border_width_bottom = 20
+border_color = Color(0.913725, 0.631373, 0.105882, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_yc5gn"]
+height = 1.55
+radius = 0.8
+
+[node name="MobSpawner" type="StaticBody3D"]
 script = ExtResource("1_68dvk")
 spawn_scene = ExtResource("2_skyhy")
 
@@ -20,6 +59,7 @@ unique_name_in_owner = true
 wait_time = 2.0
 
 [node name="spawner_model" parent="." instance=ExtResource("3_skyhy")]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
 [node name="Area3D" type="Area3D" parent="."]
@@ -28,22 +68,43 @@ collision_mask = 2
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("SphereShape3D_skyhy")
 
-[node name="SubViewport" type="SubViewport" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+mesh = SubResource("QuadMesh_skyhy")
 
-[node name="ProgressBar" type="ProgressBar" parent="SubViewport"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2.0
-offset_top = -13.5
-offset_right = 2.0
-offset_bottom = 13.5
+[node name="SubViewport" type="SubViewport" parent="MeshInstance3D"]
+transparent_bg = true
+
+[node name="ProgressBar" type="ProgressBar" parent="MeshInstance3D/SubViewport"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_yc5gn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_skyhy")
+value = 50.0
+show_percentage = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.175, 0)
+shape = SubResource("CylinderShape3D_yc5gn")
+debug_color = Color(0.569588, 0.0395987, 0.231257, 0.890196)
+
+[node name="HurtAudio" type="AudioStreamPlayer3D" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("5_rc2ki")
+attenuation_model = 1
+volume_db = 0.65
+unit_size = 57.51
+max_db = -4.03
+pitch_scale = 1.94
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]
+
+[editable path="spawner_model"]

@@ -63,11 +63,9 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	%HurtTimer.start()
 	%BounceTimer.start()
 	%HurtAudio.play()
-	%HurtArea.monitoring = false
 	
 
 func _on_hurt_timer_timeout() -> void:
-	%HurtArea.monitoring = true
 	if %HurtArea.has_overlapping_bodies():
 		for body in %HurtArea.get_overlapping_bodies():
 			_on_area_3d_body_entered(body)

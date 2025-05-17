@@ -32,8 +32,10 @@ func take_damage():
 		apply_central_impulse(direction * 10.0 + random_upward_force)
 		%DeathTimer.start()
 		lock_rotation = false
+		bat_model.die()
 		died.emit()
 		die_sound.play()
+		set_collision_layer_value(3, false)
 
 
 func _on_death_timer_timeout() -> void:
